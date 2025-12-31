@@ -2,12 +2,31 @@
 
 import { useState } from 'react';
 
+/**
+ * Home Component
+ * 
+ * The main interface for the "In a Nutshell" application.
+ * 
+ * Features:
+ * - Single text input for topics.
+ * - Calls /api/generate to fetch summaries.
+ * - Displays results in a clean, readable format.
+ * - Provides Copy and Clear functionality.
+ */
 export default function Home() {
+  // State for user input
   const [topic, setTopic] = useState('');
+  // State for the generated content
   const [result, setResult] = useState('');
+  // Loading state during API fetch
   const [loading, setLoading] = useState(false);
+  // Error state for UI feedback
   const [error, setError] = useState('');
 
+  /**
+   * handleGenerate
+   * Triggers the API call to generate the summary.
+   */
   const handleGenerate = async () => {
     if (!topic.trim()) return;
 

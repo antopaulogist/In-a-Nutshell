@@ -127,6 +127,16 @@ INTERNAL GOAL
 The reader should finish thinking:
 “Right — I get it now.”`;
 
+/**
+ * API Route: /api/generate
+ * 
+ * Handles the generation of "In a Nutshell" summaries using OpenAI.
+ * 
+ * - Validates user input (topic).
+ * - Sends a request to OpenAI using a strict System Prompt to enforce format.
+ * - Uses 'gpt-4.1-mini' for a balance of speed, cost, and intelligence.
+ * - content returned is a string containing the 3 required sections.
+ */
 export async function POST(request) {
   try {
     const { topic } = await request.json();
@@ -138,6 +148,12 @@ export async function POST(request) {
       );
     }
 
+    /* 
+     * Model Configuration:
+     * - We use 'gpt-4.1-mini' as requested for performance/cost balance.
+     * - 'max_completion_tokens' is used instead of 'max_tokens' for newer models (o1/gpt-4.1 series).
+     * - Temperature 0.4 ensures consistent, non-hallucinatory, but natural-sounding results.
+     */
     const completion = await openai.chat.completions.create({
       model: 'gpt-4.1-mini',
       messages: [
@@ -153,6 +169,7 @@ export async function POST(request) {
     return NextResponse.json({ result });
   } catch (error) {
     console.error('OpenAI API Error:', error);
+    // Generic error message to client to avoid exposing internal logic/stack traces
     return NextResponse.json(
       { error: 'Something went wrong. Please try again.' },
       { status: 500 }

@@ -1,7 +1,12 @@
+/* 
+ * Global Styles
+ * Theme: Minimal, Dark Mode, High Contrast (Premium)
+ */
 :root {
   --background: #050505;
   --foreground: #f2f2f2;
-  --accent: #3b82f6; /* Bright Blue */
+  --accent: #3b82f6;
+  /* Bright Blue */
   --accent-glow: rgba(59, 130, 246, 0.5);
   --surface: #121212;
   --border: #333;
@@ -157,13 +162,31 @@ button.secondary:hover {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 600px) {
-  h1 { font-size: 2rem; }
-  main { padding: 2rem 1rem; }
-  .actions { flex-direction: column; }
-  button.secondary { width: 100%; }
+  h1 {
+    font-size: 2rem;
+  }
+
+  main {
+    padding: 2rem 1rem;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  button.secondary {
+    width: 100%;
+  }
 }
