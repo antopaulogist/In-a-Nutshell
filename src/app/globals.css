@@ -16,12 +16,13 @@
   --accent: var(--accent-pink);
   /* Primary Action Color */
 
-  --border-width: 2px;
-  /* Gumroad is often slightly finer than raw brutalism, but still distinct */
+  --border-width: 4px;
+  /* Back to THICK borders as per mockup style */
   --border-color: #000000;
 
-  --shadow-hard: 4px 4px 0px 0px #000000;
-  --shadow-hover: 6px 6px 0px 0px #000000;
+  --shadow-hard: 8px 8px 0px 0px #000000;
+  /* Deep, heavy shadows */
+  --shadow-hover: 12px 12px 0px 0px #000000;
   --shadow-active: 0px 0px 0px 0px #000000;
 
   --font-heading: var(--font-heading), sans-serif;
@@ -40,12 +41,15 @@ body {
   font-family: var(--font-body);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  border: var(--border-width) solid #000;
+  /* Framing the whole page like a retro interface? Optional but cool. Let's stick to content framing. */
+  min-height: 100vh;
 }
 
 main {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 4rem 1.5rem;
+  padding: 4rem 2rem;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -54,46 +58,49 @@ main {
 /* Typography */
 h1 {
   font-family: var(--font-heading);
-  font-size: 3.5rem;
+  font-size: 4rem;
+  /* MASSSIVE */
   font-weight: 900;
   text-transform: uppercase;
-  margin: 0 0 2rem 0;
-  line-height: 1;
+  margin: 0 0 3rem 0;
+  line-height: 0.9;
   background: var(--surface);
   border: var(--border-width) solid var(--border-color);
   box-shadow: var(--shadow-hard);
-  padding: 1.5rem;
+  padding: 2rem;
   display: inline-block;
   transform: rotate(-1deg);
 }
 
 .subtitle {
   font-family: var(--font-body);
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   font-weight: 700;
-  margin-bottom: 3rem;
+  margin-bottom: 4rem;
   text-transform: uppercase;
   letter-spacing: -0.05em;
-  background: var(--foreground);
-  color: var(--background);
+  background: #000;
+  color: #FFF;
   display: inline-block;
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.5rem;
   transform: rotate(1deg);
+  box-shadow: 4px 4px 0 #FF90E8;
+  /* Pink shadow for fun */
 }
 
 /* Input Area */
 .input-area {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 3rem;
+  gap: 1.5rem;
+  margin-bottom: 4rem;
   align-items: stretch;
 }
 
 input[type="text"] {
   flex: 1;
-  padding: 1.5rem;
+  padding: 2rem;
   font-family: var(--font-body);
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 700;
   text-transform: uppercase;
   background: var(--surface);
@@ -106,124 +113,169 @@ input[type="text"] {
 }
 
 input[type="text"]::placeholder {
-  color: #666;
+  color: #000;
+  opacity: 0.4;
   text-transform: uppercase;
 }
 
 input[type="text"]:focus {
   background: var(--accent-yellow);
-  /* Yellow highlight on focus for brutalist feel */
   box-shadow: var(--shadow-hover);
-  transform: translate(-2px, -2px);
+  transform: translate(-4px, -4px);
+  border-color: #000;
 }
 
 button.primary {
-  padding: 0 2rem;
+  padding: 0 3rem;
   font-family: var(--font-heading);
-  font-size: 1.25rem;
-  font-weight: 800;
+  font-size: 1.5rem;
+  font-weight: 900;
   text-transform: uppercase;
   background: var(--accent-pink);
   color: #000000;
-  /* Contrast check: Orange bg, White text usually okay, or Black better? Design spec said White/Black. Let's go Black for true brutalist contrast with Orange */
   border: var(--border-width) solid var(--border-color);
-  border-radius: 4px;
-  /* Gumroad has slight rounding sometimes, let's try 4px or keep 0. User said "closer to gumroad". Gumroad uses distinct borders, often sharp or minimal radius. */
-  border-radius: 0px;
+  border-radius: 0;
   box-shadow: var(--shadow-hard);
   cursor: pointer;
   transition: all 0.1s ease;
-  min-width: 160px;
+  min-width: 200px;
 }
 
 button.primary:hover:not(:disabled) {
   background: var(--accent-pink);
-  /* Actually just shadow movement is safer for brutalism */
   filter: brightness(1.1);
   box-shadow: var(--shadow-hover);
-  transform: translate(-2px, -2px);
+  transform: translate(-4px, -4px);
 }
 
 button.primary:active:not(:disabled) {
   box-shadow: var(--shadow-active);
-  transform: translate(6px, 6px);
+  transform: translate(8px, 8px);
 }
 
 button.primary:disabled {
-  background: #ccc;
+  background: #eee;
+  color: #aaa;
   cursor: not-allowed;
-  opacity: 1;
+  box-shadow: none;
+  transform: none;
 }
 
-/* Result Card */
+/* Result Card & Structured Sections */
 .result-container {
-  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 0; /* We will use borders to separate, creating a stacked card effect */
+  background: transparent;
+  box-shadow: var(--shadow-hard); /* Shadow on the whole stack container? Or individual? Let's do container */
   border: var(--border-width) solid var(--border-color);
-  box-shadow: var(--shadow-hard);
-  padding: 0;
   margin-top: 2rem;
-  animation: slideUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  background: var(--surface);
 }
 
-.result-content {
-  padding: 2rem;
-  white-space: pre-wrap;
-  font-size: 1.1rem;
+.section-block {
+  padding: 2.5rem;
+  border-bottom: var(--border-width) solid var(--border-color);
+}
+
+.section-block:last-of-type {
+  border-bottom: 0; /* Actions bar usually comes after, so we might need border there. Actions is separate div in JSX */
+}
+
+/* Specific Block Styling */
+.nutshell-block {
+  background: var(--surface);
+}
+
+.section-title {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  display: inline-block;
+  background: #000;
+  color: #FFF;
+  padding: 0.5rem 1rem;
+  transform: rotate(-1deg);
+  box-shadow: 3px 3px 0 var(--accent-pink);
+}
+
+.section-content {
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  line-height: 1.7;
+  white-space: pre-wrap; /* Preserve formatting within sections */
+}
+
+.section-content ul {
+  list-style-type: square; /* Brutalist bullet */
+  padding-left: 1.5rem;
+}
+
+.context-block {
+  background: #FAFAFA; /* Slightly different shade? */
 }
 
 /* Parsing the raw text to style headers if we can't change HTML structure significantly.
-   Actually, we rely on the prompt structure. 
-   We can use specific styles for strong tags if we parse markdown, but we aren't currently. 
-   The prompt returns text. 
-   Ideally we should split the text in JS and render sections. 
+   Actually, we rely on the prompt structure.
+   We can use specific styles for strong tags if we parse markdown, but we aren't currently.
+   The prompt returns text.
+   Ideally we should split the text in JS and render sections.
    But "render formatted text exactly as returned" was a requirement.
-   However, visually, we can just wrap the whole thing. 
+   However, visually, we can just wrap the whole thing.
    Let's enhance the footer actions.
 */
 
 .actions {
   display: flex;
   justify-content: space-between;
-  padding: 1.5rem 2rem;
+  padding: 2rem;
   border-top: var(--border-width) solid var(--border-color);
-  background: #F9F9F9;
+  background: var(--accent-yellow);
+  /* Yellow action barent for flair */
+  background: #FFF;
+  border-top: 4px solid #000;
 }
 
 button.secondary {
   font-family: var(--font-body);
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 1rem;
   text-transform: uppercase;
-  background: transparent;
+  background: #FFF;
   color: var(--foreground);
-  border: 2px solid var(--foreground);
-  padding: 0.75rem 1.5rem;
+  border: 4px solid var(--foreground);
+  /* Thick stroke */
+  padding: 1rem 2rem;
   cursor: pointer;
-  box-shadow: 4px 4px 0 0 #000;
+  box-shadow: 6px 6px 0 0 #000;
   transition: all 0.1s;
 }
 
 button.secondary:hover {
   background: var(--foreground);
   color: var(--surface);
-  box-shadow: 6px 6px 0 0 #000;
+  box-shadow: 8px 8px 0 0 #000;
   /* Shadow stays black */
   transform: translate(-2px, -2px);
 }
 
 button.secondary:active {
   box-shadow: 0 0 0 0;
-  transform: translate(4px, 4px);
+  transform: translate(6px, 6px);
 }
 
 .error-message {
-  background: var(--accent);
+  background: var(--accent-pink);
   color: #000;
-  font-weight: bold;
-  padding: 1rem;
+  font-weight: 900;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  padding: 2rem;
   border: var(--border-width) solid var(--border-color);
   box-shadow: var(--shadow-hard);
-  margin-top: 1rem;
+  margin-top: 2rem;
 }
 
 @keyframes slideUp {
