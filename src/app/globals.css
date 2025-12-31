@@ -26,8 +26,8 @@
   --shadow-active: 0px 0px 0px 0px #000000;
 
   /* Font Vars */
-  --font-heading: var(--font-archivo), 'Impact', 'Arial Black', sans-serif;
-  --font-body: var(--font-roboto), 'Courier New', monospace;
+  --font-heading: var(--font-unbounded), 'Impact', 'Arial Black', sans-serif;
+  --font-body: var(--font-space-mono), 'Courier New', monospace;
 }
 
 * {
