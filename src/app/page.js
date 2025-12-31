@@ -1,66 +1,122 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
+
+import { useState } from 'react';
 
 export default function Home() {
+  const [topic, setTopic] = useState('');
+  const [result, setResult] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleGenerate = async () => {
+    if (!topic.trim()) return;
+
+    setLoading(true);
+    setError('');
+    setResult('');
+
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ topic }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch');
+      }
+
+      setResult(data.result);
+    } catch (err) {
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !loading) {
+      handleGenerate();
+    }
+  };
+
+  const copyToClipboard = () => {
+    if (result) {
+      navigator.clipboard.writeText(result);
+      // Optional: Show copied feedback
+    }
+  };
+
+  const clearAll = () => {
+    setTopic('');
+    setResult('');
+    setError('');
+  };
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.js file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main>
+      <header>
+        <h1>In a Nutshell</h1>
+        <p className="subtitle">The short, useful version of anything</p>
+      </header>
+
+      <section className="input-area">
+        <div className="input-group">
+          <input
+            type="text"
+            placeholder="Enter a topic (e.g. Existentialism, Bauhaus, Bitcoin)..."
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={loading}
+            maxLength={200}
+            autoFocus
+          />
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {(!result || loading) && (
+          <button
+            className="primary"
+            onClick={handleGenerate}
+            disabled={loading || !topic.trim()}
           >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            {loading ? 'Thinking...' : 'Get the nutshell'}
+          </button>
+        )}
+      </section>
+
+      {error && <p className="error-message">{error}</p>}
+
+      {result && (
+        <div className="result-container">
+          {/* We format the raw text by splitting sections manually for better styling if possible? 
+              The prompt guarantees sections: "In a Nutshell", "The Essentials", "Why It Matters".
+              Let's try to wrap them in divs for the CSS to target headers if we can, or just display raw.
+              Requirement said: "Render formatted text exactly as returned".
+              So I will just use white-space: pre-wrap. But to differentiate sections, simple highlighting would be nice.
+              However, to stay safe with "exactly as returned", I'll dump it in a pre-wrap div. 
+              But I can make it look nicer if I bold the headers. 
+              The text contains "1. In a Nutshell", etc. 
+              I'll just render it as text. Simplicity is a goal.
+          */}
+          <div className="result-content result-text">
+            {result}
+          </div>
+
+          <div className="actions">
+            <button className="secondary" onClick={copyToClipboard}>
+              Copy to clipboard
+            </button>
+            <button className="secondary" onClick={clearAll}>
+              Clear / New topic
+            </button>
+          </div>
         </div>
-      </main>
-    </div>
+      )}
+    </main>
   );
 }
