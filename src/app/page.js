@@ -80,58 +80,45 @@ export default function Home() {
     <main>
       <header>
         <h1>In a Nutshell</h1>
-        <p className="subtitle">The short, useful version of anything</p>
+        <div>
+          <span className="subtitle">The short, useful version of anything</span>
+        </div>
       </header>
 
       <section className="input-area">
-        <div className="input-group">
-          <input
-            type="text"
-            placeholder="Enter a topic (e.g. Existentialism, Bauhaus, Bitcoin)..."
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            onKeyDown={handleKeyDown}
-            disabled={loading}
-            maxLength={200}
-            autoFocus
-          />
-        </div>
-
-        {(!result || loading) && (
-          <button
-            className="primary"
-            onClick={handleGenerate}
-            disabled={loading || !topic.trim()}
-          >
-            {loading ? 'Thinking...' : 'Get the nutshell'}
-          </button>
-        )}
+        <input
+          type="text"
+          placeholder="ENTER TOPIC..."
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
+          onKeyDown={handleKeyDown}
+          disabled={loading}
+          maxLength={200}
+          autoFocus
+        />
+        <button
+          className="primary"
+          onClick={handleGenerate}
+          disabled={loading || !topic.trim()}
+        >
+          {loading ? 'WAIT' : 'GENERATE'}
+        </button>
       </section>
 
-      {error && <p className="error-message">{error}</p>}
+      {error && <div className="error-message">ERROR: {error}</div>}
 
       {result && (
         <div className="result-container">
-          {/* We format the raw text by splitting sections manually for better styling if possible? 
-              The prompt guarantees sections: "In a Nutshell", "The Essentials", "Why It Matters".
-              Let's try to wrap them in divs for the CSS to target headers if we can, or just display raw.
-              Requirement said: "Render formatted text exactly as returned".
-              So I will just use white-space: pre-wrap. But to differentiate sections, simple highlighting would be nice.
-              However, to stay safe with "exactly as returned", I'll dump it in a pre-wrap div. 
-              But I can make it look nicer if I bold the headers. 
-              The text contains "1. In a Nutshell", etc. 
-              I'll just render it as text. Simplicity is a goal.
-          */}
           <div className="result-content result-text">
             {result}
           </div>
 
           <div className="actions">
             <button className="secondary" onClick={copyToClipboard}>
-              Copy to clipboard
+              COPY TEXT
             </button>
             <button className="secondary" onClick={clearAll}>
-              Clear / New topic
+              CLEAR / NEW
             </button>
           </div>
         </div>
