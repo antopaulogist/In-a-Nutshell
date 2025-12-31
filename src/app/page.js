@@ -88,20 +88,22 @@ export default function Home() {
       context: ''
     };
 
-    // Split by the numeric headers "1.", "2.", "3."
-    // We use a lookahead to keep the delimiter or just split strictly
-    const parts = text.split(/(?:^|\n)(?=[123]\.\s)/);
+    console.log('=== PARSING RESPONSE ===');
+    console.log('Full response length:', text.length);
 
-    parts.forEach(part => {
-      const cleanPart = part.trim();
-      if (/^1\.\s+In a Nutshell/i.test(cleanPart)) {
-        sections.nutshell = cleanPart.replace(/^1\.\s+In a Nutshell[:\s]*/i, '').trim();
-      } else if (/^2\.\s+The Essentials/i.test(cleanPart)) {
-        sections.essentials = cleanPart.replace(/^2\.\s+The Essentials[:\s]*/i, '').trim();
-      } else if (/^3\.\s+Why it Matters/i.test(cleanPart)) {
-        sections.context = cleanPart.replace(/^3\.\s+Why it Matters[:\s]*/i, '').trim();
-      }
-    });
+    // More robust section splitting
+    // Look for the three main section headers
+    const nutshellMatch = text.match(/1\.\s*In a Nutshell[:\s]*\n([\s\S]*?)(?=\n\s*2\.\s*The Essentials|$)/i);
+    const essentialsMatch = text.match(/2\.\s*The Essentials[:\s]*\n([\s\S]*?)(?=\n\s*3\.\s*Why it Matters|$)/i);
+    const contextMatch = text.match(/3\.\s*Why it Matters[:\s]*\n([\s\S]*?)$/i);
+
+    if (nutshellMatch) sections.nutshell = nutshellMatch[1].trim();
+    if (essentialsMatch) sections.essentials = essentialsMatch[1].trim();
+    if (contextMatch) sections.context = contextMatch[1].trim();
+
+    console.log('Nutshell chars:', sections.nutshell.length);
+    console.log('Essentials chars:', sections.essentials.length);
+    console.log('Context chars:', sections.context.length);
 
     return sections;
   };
@@ -116,12 +118,69 @@ export default function Home() {
    * Vibe: ...
    */
   const renderEssentials = (text) => {
-    if (!text) return null;
+    if (!text) {
+      console.log('renderEssentials: No text provided');
+      return null;
+    }
 
-    // Split by numbered items (e.g., "\n1. ", "\n2. ")
-    // We use a positive lookahead to find the start of a new item without consuming it,
-    // getting an array of item strings.
-    const rawItems = text.split(/(?:\n|^)(?=\d+\.\s)/).filter(item => item.trim());
+    console.log('=== ESSENTIALS DEBUG ===');
+    console.log('Raw essentials text:', text);
+    console.log('Text length:', text.length);
+
+    let rawItems = [];
+
+    // More robust splitting: look for lines that start with a number followed by period and space
+    // Split on newlines first, then group by numbered items
+    const lines = text.split('\n');
+    let currentBlock = [];
+
+    lines.forEach((line, index) => {
+      const trimmedLine = line.trim();
+
+      // Check if this line starts with a number (1. 2. 3. etc)
+      const isNumberedItem = /^\d+\.\s/.test(trimmedLine);
+
+      if (isNumberedItem) {
+        // If we have a current block, save it first
+        if (currentBlock.length > 0) {
+          rawItems.push(currentBlock.join('\n'));
+        }
+        // Start a new block with this line
+        currentBlock = [trimmedLine];
+      } else if (trimmedLine) {
+        // Add non-empty lines to the current block
+        currentBlock.push(trimmedLine);
+      }
+    });
+
+    // Don't forget the last block
+    if (currentBlock.length > 0) {
+      rawItems.push(currentBlock.join('\n'));
+    }
+
+    console.log('Parsed items count:', rawItems.length);
+    if (rawItems.length > 0) {
+      console.log('First item preview:', rawItems[0].substring(0, 100));
+    }
+
+    if (rawItems.length === 0) {
+      return (
+        <div className="essentials-grid">
+          <div className="essential-card">
+            <div className="essential-header">
+              <h3 className="essential-title">Parsing Error</h3>
+            </div>
+            <div className="essential-details">
+              <div className="essential-row">
+                <div className="essential-value">
+                  Could not parse the essentials section. Check browser console for details.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className="essentials-grid">
@@ -130,12 +189,10 @@ export default function Home() {
           const lines = itemBlock.split('\n').map(l => l.trim()).filter(l => l);
           if (lines.length === 0) return null;
 
-          // Line 0 is usually "1. Title - Author"
-          // We remove the number for the display title
+          // Line 0 is the Title. Remove any leading number if present for clean display.
           let titleLine = lines[0].replace(/^\d+\.\s*/, '');
 
-          // Remaining lines are attributes. We map them to specific fields if possible, or just render them.
-          // The prompt enforces: "What is it?:", "Important because?:", "Vibe:"
+          // Remaining lines are attributes.
           const attributes = lines.slice(1);
 
           return (
@@ -146,15 +203,33 @@ export default function Home() {
 
               <div className="essential-details">
                 {attributes.map((line, i) => {
-                  // highlight the prefix if present
+                  // Parse the attribute line
                   const parts = line.split(':');
                   if (parts.length > 1) {
-                    const label = parts[0];
-                    const content = parts.slice(1).join(':');
+                    const label = parts[0].trim();
+                    const content = parts.slice(1).join(':').trim();
+
+                    // Special rendering for Vibe - render as pill tags
+                    if (/^Vibe$/i.test(label)) {
+                      // Split the vibe content by commas or semicolons
+                      const vibeTags = content.split(/[,;]/).map(v => v.trim()).filter(v => v);
+                      return (
+                        <div key={i} className="essential-row">
+                          <div className="essential-label">{label}</div>
+                          <div className="vibe-tags">
+                            {vibeTags.map((tag, tagIndex) => (
+                              <span key={tagIndex} className="vibe-tag">{tag}</span>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    // Regular attribute rendering
                     return (
                       <div key={i} className="essential-row">
-                        <span className="essential-label">{label}:</span>
-                        <span className="essential-value">{content}</span>
+                        <div className="essential-label">{label}</div>
+                        <div className="essential-value">{content}</div>
                       </div>
                     );
                   }
@@ -173,9 +248,9 @@ export default function Home() {
   return (
     <main>
       <header>
-        <h1>In a Nutshell</h1>
+        <h1>Learn Stuff, You Idiot</h1>
         <div>
-          <span className="subtitle">The short, useful version of anything</span>
+          <span className="subtitle">Search to make more smart</span>
         </div>
       </header>
 

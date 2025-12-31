@@ -224,63 +224,121 @@ button.primary:disabled {
 .essentials-grid {
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 3rem;
 }
 
 .essential-card {
   position: relative;
+  background: #FAFAFA;
+  border: var(--border-width) solid var(--border-color);
+  box-shadow: 6px 6px 0 #000;
+  padding: 2rem;
+  transition: all 0.2s ease;
+}
+
+.essential-card:hover {
+  box-shadow: 8px 8px 0 #000;
+  transform: translate(-2px, -2px);
+}
+
+/* Add subtle rotation variations to cards for personality */
+.essential-card:nth-child(odd) {
+  transform: rotate(0.5deg);
+}
+
+.essential-card:nth-child(even) {
+  transform: rotate(-0.3deg);
+}
+
+.essential-card:nth-child(odd):hover {
+  transform: rotate(0.5deg) translate(-2px, -2px);
+}
+
+.essential-card:nth-child(even):hover {
+  transform: rotate(-0.3deg) translate(-2px, -2px);
 }
 
 /* The Yellow Slab Header */
 .essential-header {
   background: var(--accent-yellow);
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.25rem;
   display: inline-block;
-  /* Hug content */
-  transform: rotate(-0.5deg);
-  margin-bottom: 0.5rem;
+  transform: rotate(-0.8deg);
+  margin-bottom: 1.5rem;
   border: 3px solid #000;
-  box-shadow: 4px 4px 0 #000;
+  box-shadow: 5px 5px 0 #000;
 }
 
 .essential-title {
   font-family: var(--font-heading);
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 900;
   text-transform: uppercase;
   margin: 0;
   color: #000;
-  line-height: 1.1;
+  line-height: 1.2;
 }
 
 /* Details Section */
 .essential-details {
-  border-left: 4px solid #000;
-  padding-left: 1.5rem;
-  margin-left: 0.5rem;
-  /* Align with header roughly */
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  gap: 1rem;
 }
 
 .essential-row {
-  line-height: 1.5;
+  line-height: 1.6;
   font-family: var(--font-body);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .essential-label {
-  font-weight: 700;
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  margin-right: 0.5rem;
+  font-family: var(--font-heading);
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
   color: #000;
+  margin-bottom: 0.25rem;
 }
 
 .essential-value {
-  color: #333;
+  color: #222;
+  line-height: 1.7;
+  font-size: 1.05rem;
+}
+
+/* Vibe Tags Styling */
+.vibe-tags {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+}
+
+.vibe-tag {
+  background: var(--accent-pink);
+  color: #000;
+  padding: 0.5rem 1rem;
+  border: 2px solid #000;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: lowercase;
+  box-shadow: 3px 3px 0 #000;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.vibe-tag:nth-child(2) {
+  background: var(--accent-cyan);
+}
+
+.vibe-tag:nth-child(3) {
+  background: var(--accent-yellow);
 }
 
 .context-block {
