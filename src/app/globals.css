@@ -191,12 +191,19 @@ button.primary:disabled {
   background: var(--surface);
 }
 
+/* Nutshell Content Boldness */
+.nutshell-content {
+  font-size: 1.3rem;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
 .section-title {
   font-family: var(--font-heading);
   font-size: 1.5rem;
   font-weight: 900;
   text-transform: uppercase;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   display: inline-block;
   background: #000;
   color: #FFF;
@@ -211,6 +218,42 @@ button.primary:disabled {
   line-height: 1.7;
   white-space: pre-wrap;
   /* Preserve formatting within sections */
+}
+
+/* Essentials List Styling */
+.essentials-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.essential-item {
+  margin-bottom: 1.5rem;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  padding-left: 0;
+}
+
+.essential-term {
+  font-weight: 700;
+  color: #000;
+  background: var(--accent-yellow);
+  /* Highlight terms */
+  padding: 0.1rem 0.3rem;
+  display: inline-block;
+  transform: skew(-5deg);
+  margin-right: 0.5rem;
+}
+
+.essential-separator {
+  color: #999;
+  font-weight: 300;
+}
+
+.essential-def {
+  font-style: normal;
+  /* Better without italics for readability if mono? Or user asked for italics? User mentioned "italics etc". Let's try regular but clean. */
+  color: #333;
 }
 
 .section-content ul {

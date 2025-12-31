@@ -79,40 +79,67 @@ export default function Home() {
   /**
    * parseResponse
    * Splits the raw API text into structured sections.
-   * Expected format:
-   * 1. In a Nutshell
-   * ...
-   * 2. The Essentials
-   * ...
-   * 3. Why it Matters
-   * ...
+   * Tolerates case variations and slight formatting differences.
    */
   const parseResponse = (text) => {
-    // We use a regex to split but keep the headers or just strict splitting.
-    // The prompt guarantees strict headers: "1. In a Nutshell", "2. The Essentials", "3. Why it Matters".
-    
-    // Strategy: Split by the numeric headers.
-    const parts = text.split(/(?:^|\n)(?=\d\.\s)/);
-    
     const sections = {
       nutshell: '',
       essentials: '',
       context: ''
     };
 
+    // Split by the numeric headers "1.", "2.", "3."
+    // We use a lookahead to keep the delimiter or just split strictly
+    const parts = text.split(/(?:^|\n)(?=[123]\.\s)/);
+
     parts.forEach(part => {
-      part = part.trim();
-      if (part.startsWith('1. In a Nutshell')) {
-        sections.nutshell = part.replace(/^1\.\s+In a Nutshell\s*/i, '').trim();
-      } else if (part.startsWith('2. The Essentials')) {
-        sections.essentials = part.replace(/^2\.\s+The Essentials\s*/i, '').trim();
-      } else if (part.startsWith('3. Why it Matters')) {
-        // Handle potential variations like "Why It Matters" if model drifts, but strict prompt usually works.
-        sections.context = part.replace(/^3\.\s+Why it Matters\s*/i, '').replace(/^3\.\s+Why It Matters\s*/i, '').trim();
+      const cleanPart = part.trim();
+      if (/^1\.\s+In a Nutshell/i.test(cleanPart)) {
+        sections.nutshell = cleanPart.replace(/^1\.\s+In a Nutshell[:\s]*/i, '').trim();
+      } else if (/^2\.\s+The Essentials/i.test(cleanPart)) {
+        sections.essentials = cleanPart.replace(/^2\.\s+The Essentials[:\s]*/i, '').trim();
+      } else if (/^3\.\s+Why it Matters/i.test(cleanPart)) {
+        sections.context = cleanPart.replace(/^3\.\s+Why it Matters[:\s]*/i, '').trim();
       }
     });
 
     return sections;
+  };
+
+  /**
+   * renderEssentials
+   * Formats the essentials list for better readability.
+   * Assumes content is a list of items, potentially with "Term — Definition" format.
+   */
+  const renderEssentials = (text) => {
+    if (!text) return null;
+
+    // Split by newlines to handle list items
+    const lines = text.split('\n').filter(line => line.trim());
+
+    return (
+      <ul className="essentials-list">
+        {lines.map((line, index) => {
+          // Detect "Term — Definition" or "Term: Definition"
+          // The dash could be —, -, or -
+          const separatorMatch = line.match(/([a-zA-Z0-9\s]+)(—|-|–|:)(.+)/);
+
+          if (separatorMatch) {
+            const [_, term, sep, def] = separatorMatch;
+            return (
+              <li key={index} className="essential-item">
+                <span className="essential-term">{term.trim()}</span>
+                <span className="essential-separator"> — </span>
+                <span className="essential-def">{def.trim()}</span>
+              </li>
+            );
+          }
+
+          // Fallback for lines without clear separation
+          return <li key={index} className="essential-item">{line}</li>;
+        })}
+      </ul>
+    );
   };
 
   const structuredResult = result ? parseResponse(result) : null;
@@ -137,9 +164,9 @@ export default function Home() {
           maxLength={200}
           autoFocus
         />
-        <button 
-          className="primary" 
-          onClick={handleGenerate} 
+        <button
+          className="primary"
+          onClick={handleGenerate}
           disabled={loading || !topic.trim()}
         >
           {loading ? 'WAIT' : 'GENERATE'}
@@ -150,11 +177,11 @@ export default function Home() {
 
       {structuredResult && (
         <div className="result-container">
-          
-          {/* Section 1: In a Nutshell (The Summary) - Styled Distinctly */}
+
+          {/* Section 1: In a Nutshell (The Summary) */}
           <div className="section-block nutshell-block">
             <h2 className="section-title">In a Nutshell</h2>
-            <div className="section-content">
+            <div className="section-content nutshell-content">
               {structuredResult.nutshell || "Analysing..."}
             </div>
           </div>
@@ -163,7 +190,7 @@ export default function Home() {
           <div className="section-block essentials-block">
             <h2 className="section-title">The Essentials</h2>
             <div className="section-content">
-              {structuredResult.essentials}
+              {renderEssentials(structuredResult.essentials)}
             </div>
           </div>
 
