@@ -220,51 +220,71 @@ button.primary:disabled {
   /* Preserve formatting within sections */
 }
 
-/* Essentials List Styling */
-.essentials-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+/* Essentials Grid Styling */
+.essentials-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
 }
 
-.essential-item {
-  margin-bottom: 1.5rem;
-  font-size: 1.15rem;
-  line-height: 1.6;
-  padding-left: 0;
+.essential-card {
+  position: relative;
 }
 
-.essential-term {
-  font-weight: 700;
-  color: #000;
+/* The Yellow Slab Header */
+.essential-header {
   background: var(--accent-yellow);
-  /* Highlight terms */
-  padding: 0.1rem 0.3rem;
+  padding: 0.5rem 1rem;
   display: inline-block;
-  transform: skew(-5deg);
-  margin-right: 0.5rem;
+  /* Hug content */
+  transform: rotate(-0.5deg);
+  margin-bottom: 0.5rem;
+  border: 3px solid #000;
+  box-shadow: 4px 4px 0 #000;
 }
 
-.essential-separator {
-  color: #999;
-  font-weight: 300;
+.essential-title {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin: 0;
+  color: #000;
+  line-height: 1.1;
 }
 
-.essential-def {
-  font-style: normal;
-  /* Better without italics for readability if mono? Or user asked for italics? User mentioned "italics etc". Let's try regular but clean. */
-  color: #333;
-}
-
-.section-content ul {
-  list-style-type: square;
-  /* Brutalist bullet */
+/* Details Section */
+.essential-details {
+  border-left: 4px solid #000;
   padding-left: 1.5rem;
+  margin-left: 0.5rem;
+  /* Align with header roughly */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.essential-row {
+  line-height: 1.5;
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+}
+
+.essential-label {
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  margin-right: 0.5rem;
+  color: #000;
+}
+
+.essential-value {
+  color: #333;
 }
 
 .context-block {
   background: #FAFAFA;
-  /* Slightly different shade? */
 }
 
 /* Parsing the raw text to style headers if we can't change HTML structure significantly.

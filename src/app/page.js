@@ -108,37 +108,63 @@ export default function Home() {
 
   /**
    * renderEssentials
-   * Formats the essentials list for better readability.
-   * Assumes content is a list of items, potentially with "Term — Definition" format.
+   * Formats the essentials list for the "Mega Obvious" hierarchy.
+   * Expects blocks like:
+   * 1. Title
+   * What is it?: ...
+   * Important because: ...
+   * Vibe: ...
    */
   const renderEssentials = (text) => {
     if (!text) return null;
 
-    // Split by newlines to handle list items
-    const lines = text.split('\n').filter(line => line.trim());
+    // Split by numbered items (e.g., "\n1. ", "\n2. ")
+    // We use a positive lookahead to find the start of a new item without consuming it,
+    // getting an array of item strings.
+    const rawItems = text.split(/(?:\n|^)(?=\d+\.\s)/).filter(item => item.trim());
 
     return (
-      <ul className="essentials-list">
-        {lines.map((line, index) => {
-          // Detect "Term — Definition" or "Term: Definition"
-          // The dash could be —, -, or -
-          const separatorMatch = line.match(/([a-zA-Z0-9\s]+)(—|-|–|:)(.+)/);
+      <div className="essentials-grid">
+        {rawItems.map((itemBlock, index) => {
+          // Clean up the block
+          const lines = itemBlock.split('\n').map(l => l.trim()).filter(l => l);
+          if (lines.length === 0) return null;
 
-          if (separatorMatch) {
-            const [_, term, sep, def] = separatorMatch;
-            return (
-              <li key={index} className="essential-item">
-                <span className="essential-term">{term.trim()}</span>
-                <span className="essential-separator"> — </span>
-                <span className="essential-def">{def.trim()}</span>
-              </li>
-            );
-          }
+          // Line 0 is usually "1. Title - Author"
+          // We remove the number for the display title
+          let titleLine = lines[0].replace(/^\d+\.\s*/, '');
 
-          // Fallback for lines without clear separation
-          return <li key={index} className="essential-item">{line}</li>;
+          // Remaining lines are attributes. We map them to specific fields if possible, or just render them.
+          // The prompt enforces: "What is it?:", "Important because?:", "Vibe:"
+          const attributes = lines.slice(1);
+
+          return (
+            <div key={index} className="essential-card">
+              <div className="essential-header">
+                <h3 className="essential-title">{titleLine}</h3>
+              </div>
+
+              <div className="essential-details">
+                {attributes.map((line, i) => {
+                  // highlight the prefix if present
+                  const parts = line.split(':');
+                  if (parts.length > 1) {
+                    const label = parts[0];
+                    const content = parts.slice(1).join(':');
+                    return (
+                      <div key={i} className="essential-row">
+                        <span className="essential-label">{label}:</span>
+                        <span className="essential-value">{content}</span>
+                      </div>
+                    );
+                  }
+                  return <div key={i} className="essential-row">{line}</div>;
+                })}
+              </div>
+            </div>
+          );
         })}
-      </ul>
+      </div>
     );
   };
 
