@@ -1,16 +1,16 @@
-import { Unbounded, Space_Mono } from 'next/font/google';
+import { Archivo_Black, Roboto_Mono } from 'next/font/google';
 import './globals.css';
 
-const unbounded = Unbounded({
+const archivoBlack = Archivo_Black({
+  weight: '400',
   subsets: ['latin'],
-  variable: '--font-heading',
+  variable: '--font-archivo', // Renamed to avoid collision
   display: 'swap',
 });
 
-const spaceMono = Space_Mono({
-  weight: ['400', '700'],
+const robotoMono = Roboto_Mono({
   subsets: ['latin'],
-  variable: '--font-body',
+  variable: '--font-roboto', // Renamed to avoid collision
   display: 'swap',
 });
 
@@ -21,7 +21,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${unbounded.variable} ${spaceMono.variable}`}>
+    <html lang="en" className={`${archivoBlack.variable} ${robotoMono.variable}`}>
       <body>{children}</body>
     </html>
   );

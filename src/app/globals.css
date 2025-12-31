@@ -25,8 +25,9 @@
   --shadow-hover: 12px 12px 0px 0px #000000;
   --shadow-active: 0px 0px 0px 0px #000000;
 
-  --font-heading: var(--font-heading), sans-serif;
-  --font-body: var(--font-body), monospace;
+  /* Font Vars */
+  --font-heading: var(--font-archivo), 'Impact', 'Arial Black', sans-serif;
+  --font-body: var(--font-roboto), 'Courier New', monospace;
 }
 
 * {
@@ -165,9 +166,11 @@ button.primary:disabled {
 .result-container {
   display: flex;
   flex-direction: column;
-  gap: 0; /* We will use borders to separate, creating a stacked card effect */
+  gap: 0;
+  /* We will use borders to separate, creating a stacked card effect */
   background: transparent;
-  box-shadow: var(--shadow-hard); /* Shadow on the whole stack container? Or individual? Let's do container */
+  box-shadow: var(--shadow-hard);
+  /* Shadow on the whole stack container? Or individual? Let's do container */
   border: var(--border-width) solid var(--border-color);
   margin-top: 2rem;
   background: var(--surface);
@@ -179,7 +182,8 @@ button.primary:disabled {
 }
 
 .section-block:last-of-type {
-  border-bottom: 0; /* Actions bar usually comes after, so we might need border there. Actions is separate div in JSX */
+  border-bottom: 0;
+  /* Actions bar usually comes after, so we might need border there. Actions is separate div in JSX */
 }
 
 /* Specific Block Styling */
@@ -205,16 +209,19 @@ button.primary:disabled {
   font-family: var(--font-body);
   font-size: 1.15rem;
   line-height: 1.7;
-  white-space: pre-wrap; /* Preserve formatting within sections */
+  white-space: pre-wrap;
+  /* Preserve formatting within sections */
 }
 
 .section-content ul {
-  list-style-type: square; /* Brutalist bullet */
+  list-style-type: square;
+  /* Brutalist bullet */
   padding-left: 1.5rem;
 }
 
 .context-block {
-  background: #FAFAFA; /* Slightly different shade? */
+  background: #FAFAFA;
+  /* Slightly different shade? */
 }
 
 /* Parsing the raw text to style headers if we can't change HTML structure significantly.
