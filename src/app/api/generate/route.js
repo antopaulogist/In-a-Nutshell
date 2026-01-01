@@ -1,6 +1,11 @@
 import OpenAI from 'openai';
 import { NextResponse } from 'next/server';
 
+// Validate API key exists
+if (!process.env.OPENAI_API_KEY) {
+  console.error('OPENAI_API_KEY is not set in environment variables');
+}
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -32,8 +37,7 @@ Assume no prior knowledge, but never talk down to the reader.
 
 ---
 
-OUTPUT FORMAT (MANDATORY)
-
+Expected Output Format:
 Your output must always use these exact section titles, in this order:
 
 1. In a Nutshell  
@@ -68,14 +72,16 @@ Tone rules:
 
 The Essentials
 
-List exactly 10 items, ranked by cultural impact, not personal taste.
+List exactly 10 items.
+YOU MUST NUMBER EACH ITEM (1. 2. 3...)
+Ranked by cultural impact, not personal taste.
 
 For each item, use this exact structure:
 
-Title / Name — Author / Creator / Origin (Year, where relevant)
-What it is: One sharp, engaging description or plot-hook
-Why it mattered: One short sentence on cultural, historical, or social impact
-Style: Exactly three descriptive words
+1. Title / Name — Author / Creator / Origin (Year, where relevant)  
+What is it?: WRITE EXACTLY 2-3 SENTENCES. Describe it sharply and include a hook. Do not write a single sentence.  
+Important because: One short sentence on cultural, historical, or social impact  
+Vibe: Exactly three descriptive words  
 
 Rules:
 - Always include the author, creator, or originator where applicable
@@ -143,10 +149,24 @@ export async function POST(request) {
   try {
     const { topic } = await request.json();
 
-    if (!topic) {
+    if (!topic || !topic.trim()) {
       return NextResponse.json(
         { error: 'Topic is required.' },
         { status: 400 }
+      );
+    }
+
+    if (topic.length > 200) {
+      return NextResponse.json(
+        { error: 'Topic must be 200 characters or less.' },
+        { status: 400 }
+      );
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json(
+        { error: 'API key not configured.' },
+        { status: 500 }
       );
     }
 
@@ -165,6 +185,10 @@ export async function POST(request) {
       temperature: 0.4,
       max_completion_tokens: 1500,
     });
+
+    if (!completion.choices?.[0]?.message?.content) {
+      throw new Error('No content returned from OpenAI');
+    }
 
     const result = completion.choices[0].message.content;
 

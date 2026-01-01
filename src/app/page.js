@@ -22,6 +22,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   // Error state for UI feedback
   const [error, setError] = useState('');
+  // Copy feedback state
+  const [copyFeedback, setCopyFeedback] = useState('');
 
   /**
    * handleGenerate
@@ -43,15 +45,24 @@ export default function Home() {
         body: JSON.stringify({ topic }),
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        throw new Error('Invalid response from server');
+      }
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to fetch');
       }
 
+      if (!data.result) {
+        throw new Error('No result returned');
+      }
+
       setResult(data.result);
     } catch (err) {
-      setError('Something went wrong. Please try again.');
+      setError(err.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -63,10 +74,16 @@ export default function Home() {
     }
   };
 
-  const copyToClipboard = () => {
+  const copyToClipboard = async () => {
     if (result) {
-      navigator.clipboard.writeText(result);
-      // Optional: Show copied feedback
+      try {
+        await navigator.clipboard.writeText(result);
+        setCopyFeedback('Copied to clipboard!');
+        setTimeout(() => setCopyFeedback(''), 2000);
+      } catch (err) {
+        setCopyFeedback('Failed to copy');
+        setTimeout(() => setCopyFeedback(''), 2000);
+      }
     }
   };
 
@@ -89,24 +106,26 @@ export default function Home() {
     };
 
     console.log('=== PARSING RESPONSE ===');
-    console.log('Full response length:', text.length);
 
-    // More robust section splitting
-    // Look for the three main section headers
+    // More robust section splitting with dynamic title capture
+    // 1. [Dynamic Title]
+    // 2. The Essentials
+    // 3. Why it Matters
+
+    // Capture the first section including its title
     const nutshellMatch = text.match(/1\.\s*In a Nutshell[:\s]*\n([\s\S]*?)(?=\n\s*2\.\s*The Essentials|$)/i);
     const essentialsMatch = text.match(/2\.\s*The Essentials[:\s]*\n([\s\S]*?)(?=\n\s*3\.\s*Why it Matters|$)/i);
     const contextMatch = text.match(/3\.\s*Why it Matters[:\s]*\n([\s\S]*?)$/i);
 
     if (nutshellMatch) sections.nutshell = nutshellMatch[1].trim();
+
     if (essentialsMatch) sections.essentials = essentialsMatch[1].trim();
     if (contextMatch) sections.context = contextMatch[1].trim();
 
-    console.log('Nutshell chars:', sections.nutshell.length);
-    console.log('Essentials chars:', sections.essentials.length);
-    console.log('Context chars:', sections.context.length);
-
     return sections;
   };
+
+
 
   /**
    * renderEssentials
@@ -248,9 +267,9 @@ export default function Home() {
   return (
     <main>
       <header>
-        <h1>Learn Stuff, You Idiot</h1>
+        <h1>In a Nutshell</h1>
         <div>
-          <span className="subtitle">Search to make more smart</span>
+          <span className="subtitle">Appear knowledgeable at all times.</span>
         </div>
       </header>
 
@@ -275,6 +294,7 @@ export default function Home() {
       </section>
 
       {error && <div className="error-message">ERROR: {error}</div>}
+      {copyFeedback && <div className="error-message" style={{ background: 'var(--accent-yellow)' }}>{copyFeedback}</div>}
 
       {structuredResult && (
         <div className="result-container">
